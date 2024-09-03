@@ -26,7 +26,6 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	fmt.Println(filename)
 
 	buf := make([]byte, 4096)
 	var totalBytes = 0
@@ -38,7 +37,6 @@ func main() {
 
 		if err != nil {
 			if err == io.EOF {
-				fmt.Printf("End of file\n")
 				break
 			}
 			log.Fatal(err)
@@ -50,16 +48,20 @@ func main() {
 	words := readWords(input)
 	lines := readLines(input)
 
-	if showBytes {
-		fmt.Println(totalBytes)
-	}
-
 	if showLines {
-		fmt.Println(lines)
+		fmt.Printf("\t%d", lines)
 	}
 
 	if showWords {
-		fmt.Println(words)
+		fmt.Printf("\t%d", words)
+	}
+
+	if showBytes {
+		fmt.Printf("\t%d", totalBytes)
+	}
+
+	if filename != "" {
+		fmt.Printf("\t%s", filename)
 	}
 
 }
