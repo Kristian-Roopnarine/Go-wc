@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"strings"
 )
 
 var showBytes = false
@@ -29,11 +28,13 @@ func main() {
 	}
 	fmt.Println(filename)
 
-	input := ""
 	buf := make([]byte, 4096)
 	var totalBytes = 0
+	input := ""
 	for {
 		n, err := file.Read(buf)
+		totalBytes += n
+		input += string(buf[:n])
 
 		if err != nil {
 			if err == io.EOF {
@@ -43,8 +44,6 @@ func main() {
 			log.Fatal(err)
 			return
 		}
-
-		totalBytes += n
 
 	}
 
@@ -69,9 +68,6 @@ func parseArgs(args []string) string {
 	var inflag = false
 
 	for idx, arg := range args {
-		if idx == len(args)-1 {
-			return args[idx]
-		}
 
 		for _, c := range arg {
 			if '-' == c {
@@ -89,17 +85,38 @@ func parseArgs(args []string) string {
 					showWords = true
 				}
 			}
+
+		}
+
+		if idx == len(args)-1 {
+			if inflag {
+				break
+			}
+			return args[idx]
 		}
 
 		inflag = false
 	}
-
 	return ""
 
 }
 
 func readWords(s string) int {
-	return len(strings.Fields(s))
+	count := 0
+	var inword = false
+	for _, c := range s {
+		switch c {
+		case '\r', '\t', ' ', '\n':
+			if inword {
+				count++
+				inword = false
+			}
+		default:
+			inword = true
+		}
+
+	}
+	return count
 }
 
 func readLines(s string) int {
